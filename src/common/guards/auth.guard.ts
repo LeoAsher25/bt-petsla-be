@@ -36,7 +36,7 @@ export class AuthGuard implements CanActivate {
       // try {
       let tokenDecoed = null;
       try {
-        tokenDecoed = jwt.verify(token, process.env.AT_SECRET);
+        tokenDecoed = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
       } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
           throw new UnauthorizedException(
@@ -57,10 +57,8 @@ export class AuthGuard implements CanActivate {
       if (!user) {
         throw new UnauthorizedException(MessageConstants.VERIFY_TOKEN_EXPIRED);
       }
-      if (user.status == UserStatus.DEACTIVATED) {
-        throw new UnauthorizedException(
-          MessageConstants.USER_HAS_BEEN_DEACTIVATED,
-        );
+      if (user.status == UserStatus.BLOCKED) {
+        throw new UnauthorizedException(MessageConstants.USER_HAS_BEEN_BLOCKED);
       }
 
       // Validate role

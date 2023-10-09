@@ -79,9 +79,9 @@ const MessageConstants = {
   //   message: 'User has been locked',
   //   code: 'USER_HAS_BEEN_LOCKED',
   // },
-  USER_HAS_BEEN_DEACTIVATED: {
-    message: 'User has been deactivated',
-    code: 'USER_HAS_BEEN_DEACTIVATED',
+  USER_HAS_BEEN_BLOCKED: {
+    message: 'User has been blocked',
+    code: 'USER_HAS_BEEN_BLOCKED',
   },
   EMAIL_OR_PASSWORD_IS_INCORRECT: {
     message: 'Email or password is incorrect',

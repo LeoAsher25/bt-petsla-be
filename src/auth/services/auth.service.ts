@@ -9,7 +9,7 @@ import * as jwt from 'jsonwebtoken';
 import MessageConstants from 'src/common/constants/message.constants';
 import { UserStatus } from 'src/common/constants/user.constants';
 import { UserRepository } from 'src/user/user.repository';
-import { AuthDto } from 'src/auth/dto/auth.dto';
+import { RegisterDto } from 'src/auth/dto/auth.dto';
 import { JwtPayload, Tokens } from 'src/auth/types';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class AuthService {
     private readonly userRepository: UserRepository,
   ) {}
 
-  async login(dto: AuthDto): Promise<Tokens> {
+  async login(dto: RegisterDto): Promise<Tokens> {
     // user.id: string
     // user._id: ObjectId
     const user = await this.userRepository.findOne({ email: dto.email });
@@ -32,8 +32,8 @@ export class AuthService {
       throw new BadRequestException(
         MessageConstants.EMAIL_OR_PASSWORD_IS_INCORRECT,
       );
-    if (user.status === UserStatus.DEACTIVATED)
-      throw new BadRequestException(MessageConstants.USER_HAS_BEEN_DEACTIVATED);
+    if (user.status === UserStatus.BLOCKED)
+      throw new BadRequestException(MessageConstants.USER_HAS_BEEN_BLOCKED);
     const tokens = await this.getTokens(user.id, user.email);
     await this.updateRefreshToken(user.id, tokens.refresh_token);
     return tokens;
@@ -48,7 +48,7 @@ export class AuthService {
   async getTokenFromRefreshToken(refreshToken: string): Promise<Tokens> {
     const decoded = await this.verifyRefreshToken(
       refreshToken,
-      process.env.RT_SECRET,
+      process.env.REFRESH_TOKEN_SECRET,
     );
 
     const user: any = await this.userRepository.findById(decoded.sub);
@@ -77,12 +77,12 @@ export class AuthService {
     };
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
-        secret: process.env.AT_SECRET,
-        expiresIn: process.env.AT_EXPIRES_IN,
+        secret: process.env.ACCESS_TOKEN_SECRET,
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
       }),
       this.jwtService.signAsync(jwtPayload, {
-        secret: process.env.RT_SECRET,
-        expiresIn: process.env.RT_EXPIRES_IN,
+        secret: process.env.REFRESH_TOKEN_SECRET,
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
       }),
     ]);
     return {

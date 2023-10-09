@@ -1,8 +1,4 @@
-import {
-  ValidationOptions,
-  registerDecorator,
-  ValidationArguments,
-} from 'class-validator';
+import { ValidationOptions, registerDecorator } from 'class-validator';
 
 export function Trimmed(validationOptions?: ValidationOptions) {
   return function (object: Object, propertyName: string) {
@@ -13,8 +9,6 @@ export function Trimmed(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any) {
-          console.log('value', value);
-
           if (typeof value !== 'string') {
             return false;
           }
@@ -22,7 +16,7 @@ export function Trimmed(validationOptions?: ValidationOptions) {
           return trimmedValue.length >= 0;
         },
         defaultMessage() {
-          return `${validationOptions.message} must be a non-empty string after trimming`;
+          return `${validationOptions.groups[0]} must be a non-empty string after trimming`;
         },
       },
     });

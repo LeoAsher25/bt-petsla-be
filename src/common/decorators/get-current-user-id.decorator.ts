@@ -13,7 +13,7 @@ export const GetCurrentUserId = createParamDecorator(
     if (!authorization) return null;
     try {
       const token = authorization.split(' ')[1];
-      const decodedToken = jwt.verify(token, process.env.AT_SECRET);
+      const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
       return decodedToken?.sub;
     } catch (error) {
       throw new UnauthorizedException(MessageConstants.VERIFY_TOKEN_INVALID);

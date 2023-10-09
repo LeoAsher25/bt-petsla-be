@@ -10,8 +10,8 @@ export class EmailerService {
       // Chi tiết cấu hình xem trong tài liệu nodemailer
       service: 'Gmail', // Tên dịch vụ email, ví dụ: Gmail
       auth: {
-        user: process.env.SOUND_PAY_EMAIL, // Địa chỉ email của bạn
-        pass: process.env.SOUND_PAY_EMAIL_PASSWORD, // Mật khẩu email của bạn, mật khẩu app nếu sử dụng Gmail
+        user: process.env.PETSLA_EMAIL, // Địa chỉ email của bạn
+        pass: process.env.PETSLA_EMAIL_PASSWORD, // Mật khẩu email của bạn, mật khẩu app nếu sử dụng Gmail
       },
       // Cấu hình thêm (tuỳ chọn):
       // secureConnection: true, // Sử dụng kết nối bảo mật SSL/TLS

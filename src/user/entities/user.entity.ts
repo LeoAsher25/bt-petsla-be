@@ -15,15 +15,20 @@ export class User extends mongoose.Document {
   password: string;
 
   @Prop({ required: true })
+  firstName: string;
+
+  @Prop({ required: true })
+  lastName: string;
+
+  @Prop()
   phoneNumber: string;
 
   @Prop({ required: true, enum: UserRole })
   role: UserRole;
 
   @Prop({
-    required: true,
     enum: UserStatus,
-    default: UserStatus.ACTIVATED,
+    default: UserStatus.NOT_ACTIVATED,
   })
   status: UserStatus;
 }
