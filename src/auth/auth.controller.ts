@@ -1,16 +1,17 @@
 import {
   Body,
   Controller,
-  Headers,
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
-import { RegisterDto } from 'src/auth/dto/auth.dto';
+import { LoginDto } from 'src/auth/dto/login.dto';
+import { RegisterDto } from 'src/auth/dto/register.dto';
 import { Tokens } from 'src/auth/types';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { SuccessResponseDto } from 'src/common/dto/success-response.dto';
@@ -23,7 +24,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  login(@Body() dto: RegisterDto): Promise<Tokens> {
+  login(@Body() dto: LoginDto): Promise<Tokens> {
     return this.authService.login(dto);
   }
 
@@ -48,9 +49,7 @@ export class AuthController {
 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  refreshTokens(
-    @Headers('refresh-token') refreshToken: string,
-  ): Promise<Tokens> {
+  refreshTokens(@Query('refreshToken') refreshToken: string): Promise<Tokens> {
     return this.authService.getTokenFromRefreshToken(refreshToken);
   }
 }

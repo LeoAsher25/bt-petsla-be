@@ -9,7 +9,7 @@ import * as jwt from 'jsonwebtoken';
 import MessageConstants from 'src/common/constants/message.constants';
 import { UserStatus } from 'src/common/constants/user.constants';
 import { UserRepository } from 'src/user/user.repository';
-import { RegisterDto } from 'src/auth/dto/auth.dto';
+import { RegisterDto } from 'src/auth/dto/register.dto';
 import { JwtPayload, Tokens } from 'src/auth/types';
 
 @Injectable()

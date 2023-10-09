@@ -7,7 +7,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import { RegisterDto } from 'src/auth/dto/auth.dto';
+import { LoginDto } from 'src/auth/dto/login.dto';
+import { RegisterDto } from 'src/auth/dto/register.dto';
 import { JwtPayload, Tokens } from 'src/auth/types';
 import MessageConstants from 'src/common/constants/message.constants';
 import { UserRole, UserStatus } from 'src/common/constants/user.constants';
@@ -23,9 +24,7 @@ export class AuthService {
     private readonly emailerService: EmailerService,
   ) {}
 
-  async login(dto: RegisterDto): Promise<Tokens> {
-    // user.id: string
-    // user._id: ObjectId
+  async login(dto: LoginDto): Promise<Tokens> {
     const user = await this.userRepository.findOne({ email: dto.email });
     if (!user)
       throw new BadRequestException(
@@ -96,11 +95,7 @@ export class AuthService {
   }
 
   async getTokenFromRefreshToken(refreshToken: string): Promise<Tokens> {
-    const decoded = await this.verifyRefreshToken(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET,
-    );
-
+    const decoded = await this.verifyRefreshToken(refreshToken);
     const user: any = await this.userRepository.findById(decoded.sub);
     const isMatch = await this.comparehash(refreshToken, user?.refreshToken);
 
@@ -141,9 +136,9 @@ export class AuthService {
     };
   }
 
-  async verifyRefreshToken(token: string, secretkey: string): Promise<any> {
+  async verifyRefreshToken(token: string): Promise<any> {
     try {
-      const decodedToken = jwt.verify(token, secretkey); // check null
+      const decodedToken = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET); // check null
       return decodedToken;
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
@@ -164,7 +159,10 @@ export class AuthService {
     return hashed;
   }
 
-  async comparehash(string: string, stringHashed: string): Promise<boolean> {
-    return await bcrypt.compare(string, stringHashed);
+  async comparehash(
+    value: string = '',
+    valueHashed: string = '',
+  ): Promise<boolean> {
+    return await bcrypt.compare(value, valueHashed);
   }
 }

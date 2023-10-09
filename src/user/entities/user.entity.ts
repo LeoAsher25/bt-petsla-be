@@ -31,6 +31,9 @@ export class User extends mongoose.Document {
     default: UserStatus.NOT_ACTIVATED,
   })
   status: UserStatus;
+
+  @Prop()
+  refreshToken: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
