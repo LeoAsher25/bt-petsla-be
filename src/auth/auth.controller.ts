@@ -12,10 +12,13 @@ import { SuccessResponseDto } from 'src/common/dto/success-response.dto';
 import { Tokens } from 'src/auth/types';
 import { AuthDto } from 'src/auth/dto/auth.dto';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
-import { AuthService } from 'src/auth/services/auth.service';
+import { AuthService } from 'src/auth/auth.service';
 import { AuthGuard } from 'src/common/guards/auth.guard';
+import { ApiTags } from '@nestjs/swagger';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 @Controller('auth')
+@ApiTags('Authentication')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -23,6 +26,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   login(@Body() dto: AuthDto): Promise<Tokens> {
     return this.authService.login(dto);
+  }
+
+  @Post('register')
+  @HttpCode(HttpStatus.OK)
+  register(@Body() dto: CreateUserDto) {
+    return this.authService.register(dto);
   }
 
   @UseGuards(AuthGuard)

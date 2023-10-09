@@ -7,10 +7,15 @@ import { UserRole, UserStatus } from 'src/common/constants/user.constants';
 export class User extends mongoose.Document {
   @Prop({ required: true, unique: true })
   idReadable: string;
+
   @Prop({ unique: true, required: true })
   email: string;
+
   @Prop({ required: true })
   password: string;
+
+  @Prop({ required: true })
+  phoneNumber: string;
 
   @Prop({ required: true, enum: UserRole })
   role: UserRole;
@@ -18,6 +23,7 @@ export class User extends mongoose.Document {
   @Prop({
     required: true,
     enum: UserStatus,
+    default: UserStatus.ACTIVATED,
   })
   status: UserStatus;
 }
