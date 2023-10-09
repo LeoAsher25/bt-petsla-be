@@ -7,6 +7,7 @@ import { User, UserSchema } from 'src/user/entities/user.entity';
 import { UserRepository } from 'src/user/user.repository';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { EmailerService } from 'src/emailer/emailer.service';
 
 @Module({
   imports: [
@@ -14,6 +15,6 @@ import { AuthService } from './auth.service';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, ConfigService, UserRepository],
+  providers: [AuthService, ConfigService, UserRepository, EmailerService],
 })
 export class AuthModule {}

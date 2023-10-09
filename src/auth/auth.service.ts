@@ -3,21 +3,24 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import MessageConstants from 'src/common/constants/message.constants';
-import { UserRole, UserStatus } from 'src/common/constants/user.constants';
-import { UserRepository } from 'src/user/user.repository';
-import { AuthDto } from 'src/auth/dto/auth.dto';
+import { AuthDto, RegisterDto } from 'src/auth/dto/auth.dto';
 import { JwtPayload, Tokens } from 'src/auth/types';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import MessageConstants from 'src/common/constants/message.constants';
+import { UserStatus } from 'src/common/constants/user.constants';
+import { EmailerService } from 'src/emailer/emailer.service';
+import { UserRepository } from 'src/user/user.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly userRepository: UserRepository,
+    private readonly config: ConfigService,
+    private readonly emailerService: EmailerService,
   ) {}
 
   async login(dto: AuthDto): Promise<Tokens> {
@@ -40,13 +43,29 @@ export class AuthService {
     return tokens;
   }
 
-  async register(dto: CreateUserDto) {
-    const newUser = await this.userRepository.create({
-      ...dto,
-      role: UserRole.CUSTOMER,
+  async register(dto: RegisterDto): Promise<void> {
+    const userExists = await this.userRepository.findOne({ email: dto.email });
+    if (userExists) {
+      if (userExists.email === dto.email)
+        throw new BadRequestException(MessageConstants.EMAIL_ALREADY_EXISTS);
+    }
+    const verificationToken = await this.generateVerificationToken({
+      email: dto.email,
     });
 
-    return newUser;
+    await this.emailerService.sendRegistrationEmail(
+      dto.email,
+      dto.firstName,
+      dto.lastName,
+      verificationToken,
+    );
+    const hash = await this.hashData(dto.password);
+    await this.userRepository.create({
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      email: dto.email,
+      password: hash,
+    });
   }
 
   async logout(userId: string) {
@@ -55,6 +74,15 @@ export class AuthService {
     });
   }
 
+  async generateVerificationToken(payload: any): Promise<string> {
+    const token = await this.jwtService.signAsync(payload, {
+      secret: this.config.get<string>(
+        process.env.ET_WEB_SECRET || 'ET_WEB_SECRET',
+      ),
+      expiresIn: process.env.ET_WEB_EXPIRES_IN || '10m',
+    });
+    return token;
+  }
   async getTokenFromRefreshToken(refreshToken: string): Promise<Tokens> {
     const decoded = await this.verifyRefreshToken(
       refreshToken,

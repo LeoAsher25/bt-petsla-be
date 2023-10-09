@@ -19,10 +19,10 @@ const MessageConstants = {
   //   message: 'Username already exists',
   //   code: 'USERNAME_ALREADY_EXISTS',
   // },
-  // EMAIL_ALREADY_EXISTS: {
-  //   message: 'Email already exists',
-  //   code: 'EMAIL_ALREADY_EXISTS',
-  // },
+  EMAIL_ALREADY_EXISTS: {
+    message: 'Email already exists',
+    code: 'EMAIL_ALREADY_EXISTS',
+  },
   VERIFY_TOKEN_EXPIRED: {
     message: 'Verify token expired',
     code: 'VERIFY_TOKEN_EXPIRED',
