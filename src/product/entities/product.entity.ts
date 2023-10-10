@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty } from '@nestjs/swagger';
 import mongoose from 'mongoose';
+import { ProductCategory } from 'src/product-category/entities/product-category.entity';
 
 @Schema({
   timestamps: true,
@@ -9,19 +9,23 @@ export class Product extends mongoose.Document {
   @Prop({ required: true, unique: true })
   idReadable: string;
 
-  @ApiProperty({ required: true, example: 'Sản phẩm thứ nhất' })
+  @Prop({ required: true })
   name: string;
 
-  @ApiProperty({ required: true, example: '/images' })
+  @Prop({ required: true })
   image: string;
 
-  @ApiProperty({ required: true, example: 100000 })
+  @Prop({ required: true })
   price: number;
 
-  @ApiProperty({ required: true, example: 'Mô tả cho sản phẩm thứ nhất' })
+  @Prop({ required: true })
   description: string;
 
-  @ApiProperty({ required: true, example: '' })
-  categories: string[]; // category by type of pets and type of product
+  @Prop({
+    default: [],
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ProductCategory',
+  })
+  categories: ProductCategory[]; // category by type of pets and type of product
 }
 export const ProductSchema = SchemaFactory.createForClass(Product);

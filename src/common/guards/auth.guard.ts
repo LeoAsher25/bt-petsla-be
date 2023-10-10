@@ -33,26 +33,24 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = request.headers.authorization?.replace('Bearer ', '');
     if (token) {
-      // try {
-      let tokenDecoed = null;
+      let tokenDecode = null;
       try {
-        tokenDecoed = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        tokenDecode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
       } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
           throw new UnauthorizedException(
             MessageConstants.VERIFY_TOKEN_EXPIRED,
           );
         } else {
-          throw new UnauthorizedException(
-            MessageConstants.VERIFY_TOKEN_INVALID,
-          );
+          throw new UnauthorizedException();
         }
       }
+
       // Xác thực token
       // Kiểm tra thông tin người dùng, ví dụ kiểm tra role
       // return true nếu xác thực thành công và người dùng hợp lệ
       // return false nếu xác thực không thành công hoặc người dùng không hợp lệ
-      const user = await this.userRepository.findById(tokenDecoed.sub);
+      const user = await this.userRepository.findById(tokenDecode.sub);
 
       if (!user) {
         throw new UnauthorizedException(MessageConstants.VERIFY_TOKEN_EXPIRED);
@@ -68,7 +66,7 @@ export class AuthGuard implements CanActivate {
       // Add user to request
       request.user = user;
       // Add token decoded to request
-      request.tokenDecoed = tokenDecoed;
+      request.tokenDecode = tokenDecode;
       return true;
     } else {
       throw new UnauthorizedException(MessageConstants.VERIFY_TOKEN_INVALID);

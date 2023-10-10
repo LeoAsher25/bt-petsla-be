@@ -1,22 +1,18 @@
-import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
-    console.log('exeption: ', exception, exception.message);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
     const statusCode = exception?.response?.status || exception?.status || 500;
     const message =
-      exception?.response?.data?.error ||
-      exception?.data?.error ||
-      exception?.response?.message ||
-      exception?.message ||
+      exception?.response?.message || //  ex: mongoose error
+      exception?.message || // ex: syntax error
       'Something went wrong';
     const error =
       (statusCode === 401 && (exception?.response?.error || 'Unauthorized')) ||
-      exception?.statusText ||
-      exception?.response?.statusText ||
+      exception?.name ||
       'Internal Server Error';
     const body = {
       statusCode,
@@ -26,9 +22,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
       error,
     };
 
-    if (statusCode === 500) {
-      Logger.error(exception?.message, 'AllExceptionFilter');
-    }
     response.status(statusCode).json(body);
   }
 }

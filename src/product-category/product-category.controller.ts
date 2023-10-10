@@ -1,18 +1,12 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { ProductCategoryService } from './product-category.service';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 import { CreateProductCategoryDto } from './dto/create-product-category.dto';
-import { UpdateProductCategoryDto } from './dto/update-product-category.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ProductCategoryService } from './product-category.service';
 
+@ApiBearerAuth()
 @Controller('product-category')
+@UseGuards(AuthGuard)
 @ApiTags('Product Category')
 export class ProductCategoryController {
   constructor(
@@ -31,19 +25,6 @@ export class ProductCategoryController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.productCategoryService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateProductCategoryDto: UpdateProductCategoryDto,
-  ) {
-    return this.productCategoryService.update(+id, updateProductCategoryDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productCategoryService.remove(+id);
+    return this.productCategoryService.findOne(id);
   }
 }

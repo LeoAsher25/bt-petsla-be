@@ -8,22 +8,20 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix(process.env.PREFIX_URL);
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalFilters(new AllExceptionsFilter());
+  app.enableCors();
 
   const config = new DocumentBuilder()
-    // .setBasePath('api/v1')
     .setTitle('PetsLa APIs Docs')
     .setDescription('This is APIs documentations for PestLa')
     .setVersion('1.0')
     .addBearerAuth()
+    .addSecurityRequirements('bearer')
     .build();
-
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(`${process.env.PREFIX_URL}/docs`, app, document);
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  app.useGlobalFilters(new AllExceptionsFilter());
-
-  app.enableCors();
   await app.listen(process.env.PORT);
 }
 bootstrap();

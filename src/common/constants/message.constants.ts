@@ -91,5 +91,11 @@ const MessageConstants = {
   //   message: 'Internal server error. Try again latter',
   //   code: 'INTERNAL_SERVER_ERROR',
   // },
+
+  // for product
+  PRODUCT_CATEGORY_ALREADY_EXISTS: {
+    message: 'Product category name already exists',
+    code: 'PRODUCT_CATEGORY_ALREADY_EXISTS',
+  },
 };
 export default MessageConstants;
