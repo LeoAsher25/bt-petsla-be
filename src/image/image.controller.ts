@@ -1,44 +1,49 @@
 import {
+  BadRequestException,
   Controller,
-  Get,
   Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiImage } from 'src/common/decorators/api-image.decorator';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { FileResponse } from 'src/image/image.interface';
+import { UserRepository } from 'src/user/user.repository';
 import { ImageService } from './image.service';
-import { CreateImageDto } from './dto/create-image.dto';
-import { UpdateImageDto } from './dto/update-image.dto';
-import { ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('image')
+@UseGuards(AuthGuard)
 @ApiTags('Image')
 export class ImageController {
-  constructor(private readonly imageService: ImageService) {}
+  constructor(
+    private readonly imageService: ImageService,
+    private readonly userRepository: UserRepository,
+  ) {}
 
-  @Post()
-  create(@Body() createImageDto: CreateImageDto) {
-    return this.imageService.create(createImageDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.imageService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.imageService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateImageDto: UpdateImageDto) {
-    return this.imageService.update(+id, updateImageDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.imageService.remove(+id);
+  @Post('upload')
+  @ApiImage()
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadOne(
+    @UploadedFile() image: Express.Multer.File,
+    @Req() req: any,
+  ): Promise<FileResponse> {
+    if (!image) throw new BadRequestException('No image uploaded');
+    const { mimetype, filename, originalname, size } = image;
+    const user = await this.userRepository.findOne({
+      _id: req.user.sub,
+    });
+    const createdImage = await this.imageService.create({
+      filename,
+      mimetype,
+      originalname,
+      size,
+      owner: user,
+    });
+    return createdImage;
   }
 }
