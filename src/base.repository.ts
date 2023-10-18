@@ -1,4 +1,10 @@
-import { Document, FilterQuery, Model, QueryOptions } from 'mongoose';
+import {
+  Document,
+  FilterQuery,
+  Model,
+  ProjectionType,
+  QueryOptions,
+} from 'mongoose';
 import CommonConstants from 'src/common/constants/common.constants';
 
 const generateUniqueIdReadable = () => {
@@ -41,16 +47,32 @@ export class BaseRepository<T extends Document> {
   }
 
   async getByCondition(
-    filter,
-    field?: any | null,
-    option?: any | null,
+    filter?: FilterQuery<T>,
+    projection?: ProjectionType<T> | null | undefined,
+    options?: QueryOptions<T>,
     populate?: any | null,
   ): Promise<T[]> {
-    return this.model.find(filter, field, option).populate(populate);
+    return this.model.find(filter, projection, options).populate(populate);
   }
 
   async findAll(): Promise<T[]> {
     return this.model.find();
+  }
+
+  async getAndCount(
+    filter?: FilterQuery<T>,
+    projection?: ProjectionType<T> | null | undefined,
+    options?: QueryOptions<T>,
+    populate?: any | null,
+  ) {
+    const totalRecords = await this.model.count(filter);
+    const dataList = await this.model
+      .find(filter, projection, options)
+      .populate(populate);
+    return {
+      totalRecords,
+      dataList,
+    };
   }
 
   async aggregate(option: any) {
@@ -61,31 +83,15 @@ export class BaseRepository<T extends Document> {
     return await this.model.populate(result, option);
   }
 
-  // async deleteOne(id: string) {
-  //   return this.model.deleteOne({ _id: id } as FilterQuery<T>);
-  // }
-
-  // async deleteMany(id: string[]) {
-  //   return this.model.deleteMany({ _id: { $in: id } } as FilterQuery<T>);
-  // }
-
-  // async deleteByCondition(filter) {
-  //   return this.model.deleteMany(filter);
-  // }
-
   async findByConditionAndUpdate(filter, update) {
     return this.model.findOneAndUpdate(filter as FilterQuery<T>, update);
   }
-
-  // async updateMany(filter, update, option?: any | null, callback?: any | null) {
-  //   return this.model.updateMany(filter, update, option);
-  // }
 
   async findByIdAndUpdate(id, update) {
     return this.model.findByIdAndUpdate(id, update, { new: true });
   }
 
-  // async deleteMany(filter: any) {
-  //   return this.model.deleteMany(filter);
-  // }
+  async count(filter?: FilterQuery<T>) {
+    return this.model.count(filter);
+  }
 }

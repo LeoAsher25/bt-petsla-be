@@ -16,7 +16,7 @@ import { UserRepository } from 'src/user/user.repository';
 import { ImageService } from './image.service';
 
 @ApiBearerAuth()
-@Controller('image')
+@Controller('images')
 @UseGuards(AuthGuard)
 @ApiTags('Image')
 export class ImageController {

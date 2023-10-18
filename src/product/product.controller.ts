@@ -1,18 +1,20 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
 } from '@nestjs/common';
-import { ProductService } from './product.service';
+import { ApiTags } from '@nestjs/swagger';
+import { UnidecodeQuery } from 'src/common/decorators/unidecode-query.decorator';
+import { QueryProjectDto } from 'src/common/dto/query.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ProductService } from './product.service';
 
-@Controller('product')
+@Controller('products')
 @ApiTags('Product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -23,13 +25,16 @@ export class ProductController {
   }
 
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  findAll(
+    @UnidecodeQuery({ fields: ['keyword'], dto: QueryProjectDto })
+    query: QueryProjectDto,
+  ) {
+    return this.productService.findAll(query);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.productService.findOne(+id);
+    return this.productService.findOne(id);
   }
 
   @Patch(':id')

@@ -19,11 +19,14 @@ export class Product extends mongoose.Document {
   price: number;
 
   @Prop({ required: true })
+  stock: number;
+
+  @Prop({ required: true })
   description: string;
 
   @Prop({
     default: [],
-    type: mongoose.Schema.Types.ObjectId,
+    type: Array(mongoose.Schema.Types.ObjectId),
     ref: 'ProductCategory',
   })
   categories: ProductCategory[]; // category by type of pets and type of product

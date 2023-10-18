@@ -9,6 +9,8 @@ import { OrderModule } from './order/order.module';
 import { ProductCategoryModule } from './product-category/product-category.module';
 import { ProductModule } from './product/product.module';
 import { UserModule } from './user/user.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({}),
@@ -19,6 +21,9 @@ import { UserModule } from './user/user.module';
     OrderModule,
     ImageModule,
     ProductCategoryModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

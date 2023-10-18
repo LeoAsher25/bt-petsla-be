@@ -12,7 +12,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller('order')
+@Controller('orders')
 @ApiTags('Order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
