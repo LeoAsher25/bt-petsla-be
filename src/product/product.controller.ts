@@ -6,10 +6,10 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { UnidecodeQuery } from 'src/common/decorators/unidecode-query.decorator';
-import { QueryProjectDto } from 'src/common/dto/query.dto';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { QueryProductDto } from 'src/common/dto/query.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
@@ -25,9 +25,12 @@ export class ProductController {
   }
 
   @Get()
+  @ApiQuery({ name: 'keyword', required: false })
+  @ApiQuery({ name: 'categories', required: false })
   findAll(
-    @UnidecodeQuery({ fields: ['keyword'], dto: QueryProjectDto })
-    query: QueryProjectDto,
+    @Query() query: QueryProductDto,
+    // @UnidecodeQuery({ fields: ['keyword'], dto: QueryProductDto })
+    // query: QueryProductDto,
   ) {
     return this.productService.findAll(query);
   }

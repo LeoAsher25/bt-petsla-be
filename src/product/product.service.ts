@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { QueryProjectDto } from 'src/common/dto/query.dto';
-import { ProductRepository } from 'src/product/product.repository';
 import { getPagingData } from './../common/utils/get-paging-data';
+import { Injectable } from '@nestjs/common';
+import { FilterQuery } from 'mongoose';
+import { QueryProductDto } from 'src/common/dto/query.dto';
+import { ProductRepository } from 'src/product/product.repository';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
@@ -13,28 +14,31 @@ export class ProductService {
     return 'This action adds a new product';
   }
 
-  findAll(query: QueryProjectDto) {
-    const { page, limit, keyword } = query;
-
-    const filter = {
+  findAll(query: QueryProductDto) {
+    const { page, limit, keyword, categories } = query;
+    const filter: FilterQuery<any> = {
       $or: [
-        { idReadable: { $regex: new RegExp(keyword || '', 'gmi') } },
+        { idReadable: { $regex: keyword || '', $options: 'gmi' } },
         {
           name: {
-            $regex: new RegExp(keyword || '', 'gmi'),
+            $regex: keyword || '',
+            $options: 'gmi',
           },
         },
         {
           description: {
-            $regex: new RegExp(keyword || '', 'gmi'),
+            $regex: keyword || '',
+            $options: 'gmi',
           },
         },
       ],
     };
 
+    console.log('filter: ', JSON.stringify(filter));
+
     return this.productRepository.getAndCount(
       filter,
-      '_id name price image',
+      '_id name price image categories',
       {
         ...getPagingData(page, limit),
         sort: { createdAt: -1 },
