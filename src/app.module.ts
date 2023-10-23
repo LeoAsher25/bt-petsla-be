@@ -11,10 +11,14 @@ import { ProductModule } from './product/product.module';
 import { UserModule } from './user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { JwtModule } from '@nestjs/jwt';
 @Module({
   imports: [
     ConfigModule.forRoot({}),
     MongooseModule.forRoot(process.env.MONGODB_URI),
+    JwtModule.register({
+      global: true,
+    }),
     AuthModule,
     UserModule,
     ProductModule,
@@ -27,5 +31,6 @@ import { join } from 'path';
   ],
   controllers: [AppController],
   providers: [AppService],
+  exports: [JwtModule],
 })
 export class AppModule {}

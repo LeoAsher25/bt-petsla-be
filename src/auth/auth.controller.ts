@@ -47,7 +47,7 @@ export class AuthController {
     };
   }
 
-  @Post('refresh')
+  @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
   refreshTokens(@Query('refreshToken') refreshToken: string): Promise<Tokens> {
     return this.authService.getTokenFromRefreshToken(refreshToken);

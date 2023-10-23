@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { QueryProductDto } from 'src/common/dto/query.dto';
@@ -20,8 +21,9 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productService.create(createProductDto);
+  create(@Req() req, @Body() createProductDto: CreateProductDto) {
+    console.log('createProductDt1o: ', createProductDto, req.body);
+    return this.productService.create(req.body);
   }
 
   @Get()

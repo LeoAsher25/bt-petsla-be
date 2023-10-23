@@ -27,7 +27,8 @@ import { ImageService } from './image.service';
             callback(null, `${name}_${Date.now()}${fileExtName}`);
           },
           destination: (req, file, cb) => {
-            cb(null, './' + process.env.IMAGE_UPLOAD_DIR);
+            const imageType = req?.query?.imageType || 'products';
+            cb(null, `./${process.env.IMAGE_UPLOAD_DIR}/${imageType}`);
           },
         }),
       }),

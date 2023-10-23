@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 export enum ProductCategoryType {
   BY_PET,
-  BY_USAGE,
+  BY_USES,
 }
 
 @Schema({

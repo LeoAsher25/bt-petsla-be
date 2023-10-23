@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Controller,
   Post,
+  Query,
   Req,
   UploadedFile,
   UseGuards,
@@ -15,6 +16,10 @@ import { FileResponse } from 'src/image/image.interface';
 import { UserRepository } from 'src/user/user.repository';
 import { ImageService } from './image.service';
 
+enum ImageType {
+  PRODUCTS = 'products',
+  USERS = 'users',
+}
 @ApiBearerAuth()
 @Controller('images')
 @UseGuards(AuthGuard)
@@ -31,12 +36,14 @@ export class ImageController {
   async uploadOne(
     @UploadedFile() image: Express.Multer.File,
     @Req() req: any,
+    @Query() type: ImageType,
   ): Promise<FileResponse> {
-    if (!image) throw new BadRequestException('No image uploaded');
+    if (!image) throw new BadRequestException('Không có ảnh nào được tải lên');
     const { mimetype, filename, originalname, size } = image;
     const user = await this.userRepository.findOne({
       _id: req.user.sub,
     });
+
     const createdImage = await this.imageService.create({
       filename,
       mimetype,
@@ -44,6 +51,7 @@ export class ImageController {
       size,
       owner: user,
     });
+
     return createdImage;
   }
 }

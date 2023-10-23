@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
 import * as jwt from 'jsonwebtoken';
 import MessageConstants from 'src/common/constants/message.constants';
 import { UserStatus } from 'src/common/constants/user.constants';
@@ -15,6 +16,7 @@ import { UserRepository } from 'src/user/user.repository';
 export class AuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
+    private readonly jwtService: JwtService,
     private readonly userRepository: UserRepository,
   ) {}
 
@@ -31,11 +33,14 @@ export class AuthGuard implements CanActivate {
       return true;
     }
     const request = context.switchToHttp().getRequest();
-    const token = request.headers.authorization?.replace('Bearer ', '');
-    if (token) {
+    const accessToken = request.headers.authorization?.replace('Bearer ', '');
+
+    if (accessToken) {
       let tokenDecode = null;
       try {
-        tokenDecode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        tokenDecode = await this.jwtService.verify(accessToken, {
+          secret: process.env.ACCESS_TOKEN_SECRET,
+        });
       } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
           throw new UnauthorizedException(

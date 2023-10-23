@@ -25,7 +25,7 @@ export class Product extends mongoose.Document {
   @Prop({ required: true })
   description: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false, default: false })
   isCombo: boolean;
 
   // @Prop({

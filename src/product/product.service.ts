@@ -11,7 +11,8 @@ export class ProductService {
   constructor(private readonly productRepository: ProductRepository) {}
 
   create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+    console.log('createProductDto: ', createProductDto);
+    return this.productRepository.create(createProductDto);
   }
 
   findAll(query: QueryProductDto) {
@@ -34,11 +35,9 @@ export class ProductService {
       ],
     };
 
-    console.log('filter: ', JSON.stringify(filter));
-
     return this.productRepository.getAndCount(
       filter,
-      '_id name price image categories',
+      '_id idReadable name stock price image categories created_at',
       {
         ...getPagingData(page, limit),
         sort: { createdAt: -1 },
