@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { RegisterDto } from 'src/auth/dto/register.dto';
+import { UpdateProfileDto } from 'src/auth/dto/update-profile.dto';
 import { JwtPayload, Tokens } from 'src/auth/types';
 import MessageConstants from 'src/common/constants/message.constants';
 import { UserRole } from 'src/common/constants/user.constants';
@@ -94,7 +95,10 @@ export class AuthService {
 
   async getTokenFromRefreshToken(refreshToken: string): Promise<Tokens> {
     const decoded = await this.verifyRefreshToken(refreshToken);
-    const user: any = await this.userRepository.findById(decoded.sub);
+    const user: any = await this.userRepository.findById(
+      decoded.sub,
+      'idReadable email firstName lastName role status createdAt',
+    );
     const isMatch = await this.comparehash(refreshToken, user?.refreshToken);
 
     if (!user || !isMatch) {
@@ -164,5 +168,9 @@ export class AuthService {
     valueHashed: string = '',
   ): Promise<boolean> {
     return await bcrypt.compare(value, valueHashed);
+  }
+
+  async updateProfile(id: string, profile: UpdateProfileDto) {
+    return this.userRepository.findByIdAndUpdate(id, profile);
   }
 }

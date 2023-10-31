@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Type } from 'class-transformer';
 import mongoose from 'mongoose';
 import { ProductCategory } from 'src/product-category/entities/product-category.entity';
 
@@ -26,13 +25,7 @@ export class Product extends mongoose.Document {
   description: string;
 
   @Prop({ required: false, default: false })
-  isCombo: boolean;
-
-  // @Prop({
-  //   type: [mongoose.Schema.Types.ObjectId],
-  //   ref: ProductCategory.name,
-  // })
-  // categories: ProductCategory[]; // category by type of pets and type of product
+  isSpecial: boolean;
 
   @Prop({
     type: [mongoose.Schema.Types.ObjectId],
@@ -40,6 +33,13 @@ export class Product extends mongoose.Document {
     required: true,
     default: [],
   })
-  categories: ProductCategory[];
+  usesTypes: ProductCategory[]; // array of ProductCategory with type === 1
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ProductCategory',
+    required: true,
+  })
+  petType: ProductCategory; // one ProductCategory with type === 0
 }
 export const ProductSchema = SchemaFactory.createForClass(Product);

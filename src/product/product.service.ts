@@ -11,40 +11,73 @@ export class ProductService {
   constructor(private readonly productRepository: ProductRepository) {}
 
   create(createProductDto: CreateProductDto) {
-    console.log('createProductDto: ', createProductDto);
     return this.productRepository.create(createProductDto);
   }
 
   findAll(query: QueryProductDto) {
-    const { page, limit, keyword, categories } = query;
+    const { page, limit, keyword, usesTypes, petType, isSpecial } = query;
     const filter: FilterQuery<any> = {
-      $or: [
-        { idReadable: { $regex: keyword || '', $options: 'gmi' } },
+      $and: [
         {
-          name: {
-            $regex: keyword || '',
-            $options: 'gmi',
-          },
-        },
-        {
-          description: {
-            $regex: keyword || '',
-            $options: 'gmi',
-          },
+          isSpecial: isSpecial || undefined, // using undefined because old data may dont have isSpecial property
         },
       ],
     };
 
+    if (keyword) {
+      filter.$and.push({
+        $or: [
+          { idReadable: { $regex: keyword || '', $options: 'gmi' } },
+          {
+            name: {
+              $regex: keyword || '',
+              $options: 'gmi',
+            },
+          },
+        ],
+      });
+    }
+
+    // if (isSpecial) {
+    //   filter.$and.push({
+    //     isSpecial,
+    //   });
+    // } else {
+    //   filter.$and.push({
+    //     isSpecial: false,
+    //   });
+    // }
+
+    if (usesTypes && usesTypes.length > 0) {
+      filter.$and.push({
+        usesTypes: {
+          $in: usesTypes.split(','),
+        },
+      });
+    }
+
+    if (petType) {
+      filter.$and.push({
+        petType,
+      });
+    }
+
+    console.log('filter:', JSON.stringify(filter));
+
     return this.productRepository.getAndCount(
-      filter,
-      '_id idReadable name stock price image categories created_at',
+      filter.$and.length === 0 ? {} : filter,
+      '',
       {
         ...getPagingData(page, limit),
         sort: { createdAt: -1 },
       },
       [
         {
-          path: 'categories',
+          path: 'usesTypes',
+          select: 'name type',
+        },
+        {
+          path: 'petType',
           select: 'name type',
         },
       ],
@@ -55,8 +88,8 @@ export class ProductService {
     return this.productRepository.findOne({ _id: id }, '');
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  update(id: string, updateProductDto: UpdateProductDto) {
+    return this.productRepository.findByIdAndUpdate(id, updateProductDto);
   }
 
   remove(id: number) {

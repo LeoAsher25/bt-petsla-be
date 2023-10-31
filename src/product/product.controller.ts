@@ -6,12 +6,11 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   Req,
 } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { UnidecodeQuery } from 'src/common/decorators/unidecode-query.decorator';
 import { QueryProductDto } from 'src/common/dto/query.dto';
-import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
 
@@ -21,19 +20,24 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  create(@Req() req, @Body() createProductDto: CreateProductDto) {
-    console.log('createProductDt1o: ', createProductDto, req.body);
+  create(@Req() req) {
     return this.productService.create(req.body);
   }
 
   @Get()
   @ApiQuery({ name: 'keyword', required: false })
-  @ApiQuery({ name: 'categories', required: false })
+  @ApiQuery({ name: 'usesTypes', required: false })
+  @ApiQuery({ name: 'petType', required: false })
+  @ApiQuery({ name: 'isSpecial', required: false })
   findAll(
-    @Query() query: QueryProductDto,
-    // @UnidecodeQuery({ fields: ['keyword'], dto: QueryProductDto })
-    // query: QueryProductDto,
+    // @Query() query: QueryProductDto,
+    @UnidecodeQuery({
+      fields: ['keyword', 'usesTypes', 'petType', 'isSpecial'],
+      dto: QueryProductDto,
+    })
+    query: QueryProductDto,
   ) {
+    console.log('query:', query);
     return this.productService.findAll(query);
   }
 
@@ -44,7 +48,7 @@ export class ProductController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(+id, updateProductDto);
+    return this.productService.update(id, updateProductDto);
   }
 
   @Delete(':id')

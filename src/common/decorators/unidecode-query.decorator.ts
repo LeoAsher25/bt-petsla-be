@@ -5,18 +5,20 @@ import {
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validateSync } from 'class-validator';
-// import * as unidecode from 'unidecode';
+import * as unidecode from 'unidecode';
 
 export const UnidecodeQuery = createParamDecorator(
   (data: any, context: ExecutionContext) => {
     const request = context.switchToHttp().getRequest();
     const transformedQuery = { ...request.query };
-
-    // data?.fields?.forEach((field: string) => {
-    //   if (request.query[field] !== undefined) {
-    //     transformedQuery[field] = unidecode(request.query[field]);
-    //   }
-    // });
+    data?.fields?.forEach((field: string) => {
+      if (request.query[field] !== undefined) {
+        if (request.query[field] === 'true' || request.query[field] === 'false')
+          transformedQuery[field] =
+            request.query[field] === 'true' ? true : false;
+        else transformedQuery[field] = unidecode(request.query[field]);
+      }
+    });
 
     // Biến đổi dữ liệu gốc thành đối tượng DTO
     const queryDto = plainToClass(data.dto, transformedQuery);

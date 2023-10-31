@@ -55,7 +55,10 @@ export class AuthGuard implements CanActivate {
       // Kiểm tra thông tin người dùng, ví dụ kiểm tra role
       // return true nếu xác thực thành công và người dùng hợp lệ
       // return false nếu xác thực không thành công hoặc người dùng không hợp lệ
-      const user = await this.userRepository.findById(tokenDecode.sub);
+      const user = await this.userRepository.findById(
+        tokenDecode.sub,
+        'idReadable email firstName lastName phoneNumber role status createdAt',
+      );
 
       if (!user) {
         throw new UnauthorizedException(MessageConstants.VERIFY_TOKEN_EXPIRED);

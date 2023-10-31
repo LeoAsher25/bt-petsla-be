@@ -34,8 +34,12 @@ export class BaseRepository<T extends Document> {
     return await createdEntity.save();
   }
 
-  async findById(id: string, option?: QueryOptions): Promise<T> {
-    return this.model.findById(id, null, option);
+  async findById(
+    id: string,
+    projection?: ProjectionType<T> | null | undefined,
+    option?: QueryOptions,
+  ): Promise<T> {
+    return this.model.findById(id, projection, option);
   }
 
   findOne(

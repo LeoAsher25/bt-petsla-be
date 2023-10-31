@@ -16,6 +16,12 @@ export class CreateProductDto {
   @ApiProperty({ required: true, example: 'Mô tả cho sản phẩm thứ nhất' })
   description: string;
 
-  @ApiProperty({ required: true, example: [0] })
-  categories: string[];
+  @ApiProperty({ required: true, example: ['0'] })
+  usesTypes: string[];
+
+  @ApiProperty({ required: true, example: '0' })
+  petType: string;
+
+  @ApiProperty({ required: true, example: false })
+  isSpecial: boolean;
 }

@@ -23,6 +23,12 @@ export class User extends mongoose.Document {
   @Prop()
   phoneNumber: string;
 
+  @Prop()
+  sex: string;
+
+  @Prop()
+  address: string;
+
   @Prop({ required: true, enum: UserRole })
   role: UserRole;
 
