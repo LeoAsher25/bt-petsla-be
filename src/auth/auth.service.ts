@@ -9,11 +9,11 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { RegisterDto } from 'src/auth/dto/register.dto';
-import { UpdateProfileDto } from 'src/auth/dto/update-profile.dto';
 import { JwtPayload, Tokens } from 'src/auth/types';
 import MessageConstants from 'src/common/constants/message.constants';
 import { UserRole } from 'src/common/constants/user.constants';
 import { EmailerService } from 'src/emailer/emailer.service';
+import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { UserRepository } from 'src/user/user.repository';
 
 @Injectable()
@@ -97,8 +97,9 @@ export class AuthService {
     const decoded = await this.verifyRefreshToken(refreshToken);
     const user: any = await this.userRepository.findById(
       decoded.sub,
-      'idReadable email firstName lastName role status createdAt',
+      'email refreshToken',
     );
+
     const isMatch = await this.comparehash(refreshToken, user?.refreshToken);
 
     if (!user || !isMatch) {
@@ -106,6 +107,7 @@ export class AuthService {
     }
 
     const tokens = await this.getTokens(user._id, user.email);
+
     await this.updateRefreshToken(user._id, tokens.refreshToken);
     return tokens;
   }
@@ -170,7 +172,7 @@ export class AuthService {
     return await bcrypt.compare(value, valueHashed);
   }
 
-  async updateProfile(id: string, profile: UpdateProfileDto) {
+  async updateProfile(id: string, profile: UpdateUserDto) {
     return this.userRepository.findByIdAndUpdate(id, profile);
   }
 }

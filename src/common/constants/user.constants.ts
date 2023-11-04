@@ -9,3 +9,9 @@ export enum UserStatus {
   ACTIVATED = 'ACTIVATED',
   BLOCKED = 'BLOCKED',
 }
+
+export enum EGender {
+  MALE,
+  FEMALE,
+  OTHER,
+}

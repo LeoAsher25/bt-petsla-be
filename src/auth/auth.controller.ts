@@ -6,7 +6,6 @@ import {
   HttpStatus,
   Patch,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 
@@ -14,12 +13,12 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { RegisterDto } from 'src/auth/dto/register.dto';
-import { UpdateProfileDto } from 'src/auth/dto/update-profile.dto';
 import { Tokens } from 'src/auth/types';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { GetCurrentUser } from 'src/common/decorators/get-current-user.decorator';
 import { SuccessResponseDto } from 'src/common/dto/success-response.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
+import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { User } from 'src/user/entities/user.entity';
 
 @Controller('auth')
@@ -48,10 +47,18 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Patch('profile')
   async updateProfile(
-    @Body() profile: UpdateProfileDto,
+    @Body() profile: UpdateUserDto,
     @GetCurrentUserId() userId: string,
   ) {
-    return this.authService.updateProfile(userId, profile);
+    try {
+      await this.authService.updateProfile(userId, profile);
+
+      return {
+        message: 'Cập nhật thông tin cá nhân thành công',
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   @UseGuards(AuthGuard)
@@ -60,17 +67,20 @@ export class AuthController {
   async logout(
     @GetCurrentUserId() userId: string,
   ): Promise<SuccessResponseDto> {
-    await this.authService.logout(userId);
-    return {
-      success: true,
-      message: 'Logout successfully',
-    };
+    try {
+      await this.authService.logout(userId);
+      return {
+        success: true,
+        message: 'Logout successfully',
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
-  refreshTokens(@Query('refreshToken') refreshToken: string): Promise<Tokens> {
-    console.log('refreshToken', refreshToken);
+  refreshTokens(@Body() refreshToken: string): Promise<Tokens> {
     return this.authService.getTokenFromRefreshToken(refreshToken);
   }
 }

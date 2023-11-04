@@ -37,7 +37,6 @@ export class ProductController {
     })
     query: QueryProductDto,
   ) {
-    console.log('query:', query);
     return this.productService.findAll(query);
   }
 

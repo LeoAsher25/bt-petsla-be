@@ -38,6 +38,9 @@ export class User extends mongoose.Document {
   })
   status: UserStatus;
 
+  @Prop({})
+  gender: number;
+
   @Prop()
   refreshToken: string;
 }

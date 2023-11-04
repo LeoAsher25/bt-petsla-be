@@ -62,8 +62,6 @@ export class ProductService {
       });
     }
 
-    console.log('filter:', JSON.stringify(filter));
-
     return this.productRepository.getAndCount(
       filter.$and.length === 0 ? {} : filter,
       '',

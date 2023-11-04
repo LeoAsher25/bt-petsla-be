@@ -1,6 +1,6 @@
 import { IsIn, IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 import REGEX_CONSTANT from 'src/common/constants/regex.constants';
-import { UserRole } from 'src/common/constants/user.constants';
+import { EGender, UserRole } from 'src/common/constants/user.constants';
 import { Trimmed } from 'src/common/decorators/trimed.decorator';
 
 export class CreateUserDto {
@@ -40,4 +40,7 @@ export class CreateUserDto {
 
   @IsIn(Object.values(UserRole))
   role: UserRole;
+
+  @IsIn(Object.values(EGender))
+  gender: EGender;
 }
