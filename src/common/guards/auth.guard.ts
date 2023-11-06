@@ -57,7 +57,7 @@ export class AuthGuard implements CanActivate {
       // return false nếu xác thực không thành công hoặc người dùng không hợp lệ
       const user = await this.userRepository.findById(
         tokenDecode.sub,
-        'idReadable email firstName lastName phoneNumber role status createdAt gender',
+        'idReadable email firstName lastName phoneNumber role status address gender',
       );
 
       if (!user) {

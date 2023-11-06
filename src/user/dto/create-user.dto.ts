@@ -30,6 +30,9 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Phone number is required' })
   phoneNumber: string;
 
+  @IsNotEmpty({ message: 'Phone number is required' })
+  address: string;
+
   @IsNotEmpty()
   @Trimmed({ message: 'Password' })
   @Matches(REGEX_CONSTANT.PASSWORD_REGEX, {

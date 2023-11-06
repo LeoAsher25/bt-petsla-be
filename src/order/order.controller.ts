@@ -11,6 +11,7 @@ import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 
 @Controller('orders')
 @ApiTags('Order')
@@ -18,8 +19,11 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.orderService.create(createOrderDto);
+  create(
+    @Body() createOrderDto: CreateOrderDto,
+    @GetCurrentUserId() customerId: string,
+  ) {
+    return this.orderService.create(createOrderDto, customerId);
   }
 
   @Get()

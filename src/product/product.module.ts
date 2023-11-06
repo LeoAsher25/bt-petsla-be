@@ -11,5 +11,9 @@ import { ProductRepository } from 'src/product/product.repository';
   ],
   controllers: [ProductController],
   providers: [ProductService, ProductRepository],
+  exports: [
+    ProductRepository,
+    MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
+  ],
 })
 export class ProductModule {}

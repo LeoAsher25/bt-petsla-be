@@ -80,7 +80,11 @@ export class AuthController {
 
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
-  refreshTokens(@Body() refreshToken: string): Promise<Tokens> {
-    return this.authService.getTokenFromRefreshToken(refreshToken);
+  refreshTokens(@Body() body: any): Promise<Tokens> {
+    try {
+      return this.authService.getTokenFromRefreshToken(body.refreshToken);
+    } catch (error) {
+      throw error;
+    }
   }
 }
