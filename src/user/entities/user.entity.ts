@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { UserRole, UserStatus } from 'src/common/constants/user.constants';
+import { EUserRole, EUserStatus } from 'src/common/constants/user.constants';
 @Schema({
   timestamps: true,
 })
@@ -29,14 +29,14 @@ export class User extends mongoose.Document {
   @Prop()
   address: string;
 
-  @Prop({ required: true, enum: UserRole })
-  role: UserRole;
+  @Prop({ required: true, enum: EUserRole })
+  role: EUserRole;
 
   @Prop({
-    enum: UserStatus,
-    default: UserStatus.NOT_ACTIVATED,
+    enum: EUserStatus,
+    default: EUserStatus.NOT_ACTIVATED,
   })
-  status: UserStatus;
+  status: EUserStatus;
 
   @Prop({})
   gender: number;

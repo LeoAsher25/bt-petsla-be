@@ -9,7 +9,7 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import * as jwt from 'jsonwebtoken';
 import MessageConstants from 'src/common/constants/message.constants';
-import { UserStatus } from 'src/common/constants/user.constants';
+import { EUserStatus } from 'src/common/constants/user.constants';
 import { UserRepository } from 'src/user/user.repository';
 
 @Injectable()
@@ -63,7 +63,7 @@ export class AuthGuard implements CanActivate {
       if (!user) {
         throw new UnauthorizedException(MessageConstants.VERIFY_TOKEN_EXPIRED);
       }
-      if (user.status == UserStatus.BLOCKED) {
+      if (user.status == EUserStatus.BLOCKED) {
         throw new UnauthorizedException(MessageConstants.USER_HAS_BEEN_BLOCKED);
       }
 

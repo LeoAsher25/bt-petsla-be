@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { ProductCategoryType } from 'src/product-category/entities/product-category.entity';
+import { EProductCategoryType } from 'src/product-category/entities/product-category.entity';
 
 export class CreateProductCategoryDto {
   @ApiProperty({
@@ -15,5 +15,5 @@ export class CreateProductCategoryDto {
     example: 0,
   })
   @IsNotEmpty({ message: 'Product category type is required' })
-  type: ProductCategoryType;
+  type: EProductCategoryType;
 }

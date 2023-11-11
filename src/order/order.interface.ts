@@ -1,4 +1,4 @@
-export enum PaymentMethod {
+export enum EPaymentMethod {
   COD,
   MOMO,
 }
@@ -9,4 +9,18 @@ export interface OrderProduct {
   image: string;
   price: string;
   quantity: number;
+}
+
+export enum EOrderStatus {
+  PENDING,
+  SHIPPING,
+  DELIVERED,
+  CANCELLED,
+}
+
+export enum EPaymentStatus {
+  UNPAID,
+  PAID,
+  REFUNDING,
+  REFUNDED,
 }

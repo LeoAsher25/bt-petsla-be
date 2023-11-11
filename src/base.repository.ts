@@ -8,8 +8,7 @@ import {
 import CommonConstants from 'src/common/constants/common.constants';
 
 const generateUniqueIdReadable = () => {
-  const characters =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let idReadable = '';
   for (let i = 0; i < CommonConstants.ID_READABLE_LENGTH; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);

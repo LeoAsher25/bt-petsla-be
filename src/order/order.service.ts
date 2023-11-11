@@ -1,9 +1,11 @@
-import { ProductRepository } from 'src/product/product.repository';
+import { getPagingData } from './../common/utils/get-paging-data';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { QueryDto } from 'src/common/dto/query.dto';
+import { Product } from 'src/product/entities/product.entity';
+import { ProductRepository } from 'src/product/product.repository';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderRepository } from './order.repository';
-import { Product } from 'src/product/entities/product.entity';
 
 @Injectable()
 export class OrderService {
@@ -20,6 +22,7 @@ export class OrderService {
     let totalCost = 0;
 
     for (const item of createOrderDto.orderItems) {
+      console.log('createOrderDto: ', createOrderDto);
       const product: Product = await this.productRepository.findById(
         String(item.productId),
       );
@@ -55,12 +58,16 @@ export class OrderService {
     });
   }
 
-  findAll() {
-    return `This action returns all order`;
+  findAll(query: QueryDto) {
+    const { page, limit } = query;
+    return this.orderRepository.getAndCount({}, '', {
+      ...getPagingData(page, limit),
+      sort: { createdAt: -1 },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  findOne(id: string) {
+    return this.orderRepository.findById(id);
   }
 
   update(id: number, updateOrderDto: UpdateOrderDto) {

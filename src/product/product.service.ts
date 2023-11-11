@@ -1,10 +1,10 @@
 import { getPagingData } from './../common/utils/get-paging-data';
 import { Injectable } from '@nestjs/common';
 import { FilterQuery } from 'mongoose';
-import { QueryProductDto } from 'src/common/dto/query.dto';
 import { ProductRepository } from 'src/product/product.repository';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { QueryProductDto } from 'src/product/dto/product-query.dto';
 
 @Injectable()
 export class ProductService {

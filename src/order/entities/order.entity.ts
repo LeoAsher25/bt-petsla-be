@@ -1,7 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { OrderProductDto } from 'src/order/dto/create-order.dto';
-import { PaymentMethod } from 'src/order/order.interface';
+import {
+  EOrderStatus,
+  EPaymentMethod,
+  EPaymentStatus,
+} from 'src/order/order.interface';
 import { Product } from 'src/product/entities/product.entity';
 import { User } from 'src/user/entities/user.entity';
 
@@ -9,6 +13,9 @@ import { User } from 'src/user/entities/user.entity';
   timestamps: true,
 })
 export class Order extends mongoose.Document {
+  @Prop({ required: true, unique: true })
+  idReadable: string;
+
   @Prop({ required: true })
   fullName: string;
 
@@ -18,14 +25,14 @@ export class Order extends mongoose.Document {
   @Prop({ required: true })
   phoneNumber: string;
 
-  @Prop({})
+  @Prop({ required: false })
   note: string;
 
   @Prop({ required: true })
   totalCost: number;
 
-  @Prop({ required: true, enum: PaymentMethod, default: PaymentMethod.COD })
-  paymentMethod: PaymentMethod;
+  @Prop({ required: true, enum: EPaymentMethod, default: EPaymentMethod.COD })
+  paymentMethod: EPaymentMethod;
 
   @Prop({
     required: true,
@@ -33,6 +40,18 @@ export class Order extends mongoose.Document {
     ref: User.name,
   })
   customerId: User;
+
+  @Prop({
+    enum: EOrderStatus,
+    default: EOrderStatus.PENDING,
+  })
+  orderStatus: EOrderStatus;
+
+  @Prop({
+    enum: EPaymentStatus,
+    default: EPaymentStatus.UNPAID,
+  })
+  paymentStatus: EPaymentStatus;
 
   @Prop({
     // type: [{ type: mongoose.Schema.Types.ObjectId, ref: Product.name }],

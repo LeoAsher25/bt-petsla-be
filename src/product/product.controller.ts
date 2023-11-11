@@ -10,9 +10,10 @@ import {
 } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { UnidecodeQuery } from 'src/common/decorators/unidecode-query.decorator';
-import { QueryProductDto } from 'src/common/dto/query.dto';
+
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
+import { QueryProductDto } from 'src/product/dto/product-query.dto';
 
 @Controller('products')
 @ApiTags('Product')

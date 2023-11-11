@@ -1,7 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsIn, IsMongoId, IsNotEmpty } from 'class-validator';
+import {
+  IsArray,
+  IsIn,
+  IsMongoId,
+  IsNotEmpty,
+  IsString,
+} from 'class-validator';
 import mongoose from 'mongoose';
-import { PaymentMethod } from 'src/order/order.interface';
+import { EPaymentMethod } from 'src/order/order.interface';
 
 export class CreateOrderDto {
   @ApiProperty({ required: true, example: 'Nguyễn Văn A' })
@@ -20,11 +26,12 @@ export class CreateOrderDto {
   phoneNumber: string;
 
   @ApiProperty({ example: 'Gói hàng vào hộp quà đẹp' })
+  @IsString()
   note: string;
 
-  @ApiProperty({ example: PaymentMethod.COD })
-  @IsIn(Object.values(PaymentMethod))
-  paymentMethod: PaymentMethod;
+  @ApiProperty({ example: EPaymentMethod.COD })
+  @IsIn(Object.values(EPaymentMethod))
+  paymentMethod: EPaymentMethod;
 
   @ApiProperty({
     example: [

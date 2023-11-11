@@ -11,7 +11,7 @@ import { LoginDto } from 'src/auth/dto/login.dto';
 import { RegisterDto } from 'src/auth/dto/register.dto';
 import { JwtPayload, Tokens } from 'src/auth/types';
 import MessageConstants from 'src/common/constants/message.constants';
-import { UserRole } from 'src/common/constants/user.constants';
+import { EUserRole } from 'src/common/constants/user.constants';
 import { EmailerService } from 'src/emailer/emailer.service';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { UserRepository } from 'src/user/user.repository';
@@ -64,7 +64,7 @@ export class AuthService {
       lastName: dto.lastName,
       email: dto.email,
       password: hashedPassword,
-      role: UserRole.CUSTOMER,
+      role: EUserRole.CUSTOMER,
     });
     return {
       message: 'Register successfully',

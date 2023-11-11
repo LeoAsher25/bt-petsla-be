@@ -1,10 +1,10 @@
-export enum UserRole {
+export enum EUserRole {
   ADMIN = 'ADMIN',
   SELLER = 'SELLER',
   CUSTOMER = 'CUSTOMER',
 }
 
-export enum UserStatus {
+export enum EUserStatus {
   NOT_ACTIVATED = 'NOT_ACTIVATED',
   ACTIVATED = 'ACTIVATED',
   BLOCKED = 'BLOCKED',
