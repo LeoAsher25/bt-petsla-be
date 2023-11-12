@@ -47,15 +47,11 @@ export class AuthService {
       if (userExists.email === dto.email)
         throw new BadRequestException(MessageConstants.EMAIL_ALREADY_EXISTS);
     }
-    const verificationToken = await this.generateVerificationToken({
-      email: dto.email,
-    });
 
     await this.emailerService.sendRegistrationEmail(
       dto.email,
       dto.firstName,
       dto.lastName,
-      verificationToken,
     );
 
     const hashedPassword = await this.hashData(dto.password);
@@ -63,6 +59,7 @@ export class AuthService {
       firstName: dto.firstName,
       lastName: dto.lastName,
       email: dto.email,
+      phoneNumber: dto.phoneNumber,
       password: hashedPassword,
       role: EUserRole.CUSTOMER,
     });

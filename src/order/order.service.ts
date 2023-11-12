@@ -6,15 +6,18 @@ import { ProductRepository } from 'src/product/product.repository';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderRepository } from './order.repository';
+import { EmailerService } from 'src/emailer/emailer.service';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class OrderService {
   constructor(
     private readonly orderRepository: OrderRepository,
     private readonly productRepository: ProductRepository,
+    private readonly emailerService: EmailerService,
   ) {}
 
-  async create(createOrderDto: CreateOrderDto, customerId: string) {
+  async create(createOrderDto: CreateOrderDto, currentUser: User) {
     if (!createOrderDto.orderItems || createOrderDto.orderItems.length === 0) {
       throw new BadRequestException('No product is selected');
     }
@@ -22,7 +25,6 @@ export class OrderService {
     let totalCost = 0;
 
     for (const item of createOrderDto.orderItems) {
-      console.log('createOrderDto: ', createOrderDto);
       const product: Product = await this.productRepository.findById(
         String(item.productId),
       );
@@ -51,11 +53,19 @@ export class OrderService {
       totalCost += product.price * item.quantity;
     }
 
-    return this.orderRepository.create({
+    const response = await this.orderRepository.create({
       ...createOrderDto,
-      customerId,
+      customerId: currentUser._id,
       totalCost,
     });
+
+    this.emailerService.sendOrderSuccessEmail(
+      currentUser.email,
+      totalCost,
+      createOrderDto,
+    );
+
+    return response;
   }
 
   findAll(query: QueryDto) {

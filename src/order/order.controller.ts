@@ -1,32 +1,35 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
-import { OrderService } from './order.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
-import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
+import { GetCurrentUser } from 'src/common/decorators/get-current-user.decorator';
 import { UnidecodeQuery } from 'src/common/decorators/unidecode-query.decorator';
 import { QueryDto } from 'src/common/dto/query.dto';
+import { User } from 'src/user/entities/user.entity';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrderService } from './order.service';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @Controller('orders')
 @ApiTags('Order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
+  @UseGuards(AuthGuard)
   @Post()
   create(
     @Body() createOrderDto: CreateOrderDto,
-    @GetCurrentUserId() customerId: string,
+    @GetCurrentUser() currentUser: User,
   ) {
-    console.log('createOrderDtocreateOrderDto: ', createOrderDto);
-    return this.orderService.create(createOrderDto, customerId);
+    return this.orderService.create(createOrderDto, currentUser);
   }
 
   @Get()

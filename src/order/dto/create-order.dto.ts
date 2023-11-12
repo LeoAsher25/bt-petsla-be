@@ -60,7 +60,7 @@ export class OrderProductDto {
   image: string;
 
   @IsNotEmpty({ message: 'Product price is required' })
-  price: string;
+  price: number;
 
   @IsNotEmpty({ message: 'Quantity is required' })
   quantity: number;

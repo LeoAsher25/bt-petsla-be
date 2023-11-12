@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { CreateOrderDto } from 'src/order/dto/create-order.dto';
 
 @Injectable()
 export class EmailerService {
@@ -23,43 +24,69 @@ export class EmailerService {
     email: string,
     firstName: string,
     lastName: string,
-    verificationToken: string,
   ): Promise<void> {
-    const linkVerify = `${process.env.PETSLA_URL}/verify-email?token=${verificationToken}`;
     const mailOptions: nodemailer.SendMailOptions = {
       to: email, // Địa chỉ email đích
-      subject: 'PetsLa: Please confirm your email address', // Chủ đề email
+      subject: 'PetsLa: Đăng ký tài khoản thành công', // Chủ đề email
       html: `
-      <h4>Dear ${firstName + ' ' + lastName}</h4>
-      <p>This is your final step to complete setting up your PetsLa account. Click this link below to verify your email and enjoy moments with PetsLa:</p>
-      <a href="${linkVerify}">Confirm your email here</a>
-      <p>Verification link only validates in 30 minutes.</p>
-      <p>Best regards,</p>
-      <p>PetsLa team</p>
+      <h4>Xin chào ${lastName} ${firstName}</h4>
+      <p>Bạn nhận được mail này khi đã đăng ký thành công tài khoản tại PetsLa. Chúng tôi xin cảm ơn bạn đã lựa chọn PetsLa. Chúc bạn sẽ lựa chọn được những sản phẩm ưng ý</p>
+      <p>Trân trọng,</p>
+      <p>PetsLa Shop</p>
       `, // Nội dung email dạng HTML
     };
     await this.transporter.sendMail(mailOptions);
   }
 
-  async sendPasswordResetEmail(
+  async sendOrderSuccessEmail(
     email: string,
-    firstName: string,
-    lastName: string,
-    resetPasswordToken: string,
-  ) {
-    const linkResetPassword = `${process.env.PETSLA_URL}/reset-password?token=${resetPasswordToken}`;
+    totalCost: number,
+    createOrderDto: CreateOrderDto,
+  ): Promise<void> {
+    const trList = createOrderDto.orderItems.map(
+      (item, index) =>
+        `
+        <tr>
+          <td style="padding: 4px 8px; text-align: center"> ${index} </td>
+          <td style="padding: 4px 8px"> ${item.name} </td>
+          <td style="padding: 4px 8px"> ${item.price}đ </td>
+          <td style="padding: 4px 8px"> ${item.quantity} </td>
+          <td style="padding: 4px 8px"> ${item.quantity * item.price}đ </td>
+        </tr>
+        `,
+    );
+
     const mailOptions: nodemailer.SendMailOptions = {
       to: email, // Địa chỉ email đích
-      subject: 'Password change request', // Chủ đề email
+      subject: 'PetsLa: Đặt hàng thành công', // Chủ đề email
       html: `
-      <h4>Dear ${firstName + ' ' + lastName}</h4>
-      <p>We’ve received your password change request. Click the below link to set up your new password:</p>
-      <a href="${linkResetPassword}">Confirm your email here</a>
-      <p>Verification link only validates in 30 minutes.</p>
-      <p>Best regards,</p>
-      <p>PetsLa team</p>
+      <h4>Xin chào ${createOrderDto.fullName}</h4>
+      <p>Chúng tôi xin cảm ơn bạn đã lựa chọn mua sản phẩm tại PetsLa. Dưới đây là danh sách chi tiết:</p>
+      <table border="1" style="border-spacing: 0">
+        <thead>
+          <tr>
+            <th style="padding: 4px 8px">STT</th>
+            <th style="padding: 4px 8px; text-align: left">Tên</th>
+            <th style="padding: 4px 8px">Đơn giá</th>
+            <th style="padding: 4px 8px">Số lượng</th>
+            <th style="padding: 4px 8px">Thành tiền</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${trList.join('')}
+        </tbody>
+      </table>
+
+      <p> Tổng tiền: ${totalCost}đ </p>
+
+      <p> Chúng tôi sẽ sớm đóng gói sản phẩm và chuyển đến bạn sớm nhất có thể. </p>
+
+      <p>Trân trọng,</p>
+      <p>PetsLa Shop</p>
       `, // Nội dung email dạng HTML
     };
+
     await this.transporter.sendMail(mailOptions);
   }
 }
