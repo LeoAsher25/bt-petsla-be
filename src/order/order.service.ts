@@ -22,6 +22,10 @@ export class OrderService {
       throw new BadRequestException('No product is selected');
     }
 
+    if (createOrderDto.note.length > 500) {
+      throw new BadRequestException(`Ghi chú chỉ được tối đa 500 kí tự`);
+    }
+
     let totalCost = 0;
 
     for (const item of createOrderDto.orderItems) {
@@ -45,11 +49,6 @@ export class OrderService {
         );
       }
 
-      // Update the stock of the product
-      await this.productRepository.findByIdAndUpdate(item.productId, {
-        stock: product.stock - item.quantity,
-      });
-
       totalCost += product.price * item.quantity;
     }
 
@@ -64,6 +63,16 @@ export class OrderService {
       totalCost,
       createOrderDto,
     );
+    for (const item of createOrderDto.orderItems) {
+      // Update the stock of the product
+      const product: Product = await this.productRepository.findById(
+        String(item.productId),
+      );
+
+      await this.productRepository.findByIdAndUpdate(item.productId, {
+        stock: product.stock - item.quantity,
+      });
+    }
 
     return response;
   }
