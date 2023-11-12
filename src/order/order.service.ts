@@ -70,8 +70,22 @@ export class OrderService {
     return this.orderRepository.findById(id);
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  async update(id: string, updateOrderDto: UpdateOrderDto) {
+    try {
+      const response = await this.orderRepository.findByIdAndUpdate(
+        id,
+        updateOrderDto,
+      );
+
+      const responseOrder = {
+        ...response.toObject(),
+        ...updateOrderDto,
+      };
+
+      return responseOrder;
+    } catch (error) {
+      throw error;
+    }
   }
 
   remove(id: number) {

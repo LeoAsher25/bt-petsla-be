@@ -16,16 +16,16 @@ export class Order extends mongoose.Document {
   @Prop({ required: true, unique: true })
   idReadable: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, maxlength: 50 })
   fullName: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, maxlength: 150 })
   address: string;
 
   @Prop({ required: true })
   phoneNumber: string;
 
-  @Prop({ required: false })
+  @Prop({ required: false, maxlength: 500 })
   note: string;
 
   @Prop({ required: true })
