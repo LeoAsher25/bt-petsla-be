@@ -14,15 +14,17 @@ export class ProductService {
     return this.productRepository.create(createProductDto);
   }
 
-  findAll(query: QueryProductDto) {
+  async findAll(query: QueryProductDto) {
     const { page, limit, keyword, usesTypes, petType, isSpecial } = query;
     const filter: FilterQuery<any> = {
-      $and: [
-        {
-          isSpecial: isSpecial || undefined, // using undefined because old data may dont have isSpecial property
-        },
-      ],
+      $and: [],
     };
+
+    if (isSpecial === true || isSpecial === false) {
+      filter.$and.push({
+        isSpecial: isSpecial, // using undefined because old data may dont have isSpecial property
+      });
+    }
 
     if (keyword) {
       filter.$and.push({

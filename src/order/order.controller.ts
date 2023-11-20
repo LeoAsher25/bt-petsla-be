@@ -32,9 +32,11 @@ export class OrderController {
     return this.orderService.create(createOrderDto, currentUser);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   @ApiQuery({ name: 'keyword', required: false })
   findAll(
+    @GetCurrentUser() currentUser: User,
     // @Query() query: QueryProductDto,
     @UnidecodeQuery({
       fields: ['keyword'],
@@ -42,7 +44,8 @@ export class OrderController {
     })
     query: QueryDto,
   ) {
-    return this.orderService.findAll(query);
+    console.log('currentUser: ', currentUser);
+    return this.orderService.findAll(query, currentUser);
   }
 
   @Get(':id')

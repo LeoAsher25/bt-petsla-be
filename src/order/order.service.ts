@@ -77,12 +77,18 @@ export class OrderService {
     return response;
   }
 
-  findAll(query: QueryDto) {
+  findAll(query: QueryDto, currentUser: User) {
     const { page, limit } = query;
-    return this.orderRepository.getAndCount({}, '', {
-      ...getPagingData(page, limit),
-      sort: { createdAt: -1 },
-    });
+    return this.orderRepository.getAndCount(
+      {
+        customerId: currentUser._id,
+      },
+      '',
+      {
+        ...getPagingData(page, limit),
+        sort: { createdAt: -1 },
+      },
+    );
   }
 
   findOne(id: string) {
