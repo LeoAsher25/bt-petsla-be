@@ -1,14 +1,14 @@
-import { ProductFeedbackRepository } from './../product-feedback/product-feedback.repository';
 import { getPagingData } from './../common/utils/get-paging-data';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { QueryDto } from 'src/common/dto/query.dto';
+import { EmailerService } from 'src/emailer/emailer.service';
 import { Product } from 'src/product/entities/product.entity';
 import { ProductRepository } from 'src/product/product.repository';
+import { User } from 'src/user/entities/user.entity';
+import { ProductFeedbackRepository } from './../product-feedback/product-feedback.repository';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { OrderQueryDto } from './dto/order-query.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderRepository } from './order.repository';
-import { EmailerService } from 'src/emailer/emailer.service';
-import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class OrderService {
@@ -79,18 +79,22 @@ export class OrderService {
     return response;
   }
 
-  findAll(query: QueryDto, currentUser: User) {
-    const { page, limit } = query;
-    return this.orderRepository.getAndCount(
-      {
+  findAll(query: OrderQueryDto, currentUser: User) {
+    const { page, limit, orderStatus, isAdmin } = query;
+    let filter: any = {};
+    if (!isAdmin) {
+      filter = {
         customerId: currentUser._id,
-      },
-      '',
-      {
-        ...getPagingData(page, limit),
-        sort: { createdAt: -1 },
-      },
-    );
+      };
+    }
+    if (orderStatus) {
+      filter.orderStatus = Number(orderStatus);
+    }
+
+    return this.orderRepository.getAndCount(filter, '', {
+      ...getPagingData(page, limit),
+      sort: { createdAt: -1 },
+    });
   }
 
   async findOne(id: string) {

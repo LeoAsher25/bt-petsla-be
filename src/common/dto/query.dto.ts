@@ -6,5 +6,10 @@ export class QueryDto extends PaginationDto {
   @IsString()
   @IsOptional()
   @Trimmed()
-  keyword: string;
+  keyword?: string;
+
+  @IsString()
+  @IsOptional()
+  @Trimmed()
+  isAdmin?: string;
 }

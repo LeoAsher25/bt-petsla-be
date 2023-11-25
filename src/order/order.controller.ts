@@ -44,7 +44,6 @@ export class OrderController {
     })
     query: QueryDto,
   ) {
-    console.log('currentUser: ', currentUser);
     return this.orderService.findAll(query, currentUser);
   }
 
