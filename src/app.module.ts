@@ -12,6 +12,7 @@ import { UserModule } from './user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { JwtModule } from '@nestjs/jwt';
+import { ProductFeedbackModule } from './product-feedback/product-feedback.module';
 @Module({
   imports: [
     ConfigModule.forRoot({}),
@@ -28,6 +29,7 @@ import { JwtModule } from '@nestjs/jwt';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
+    ProductFeedbackModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,3 +1,4 @@
+import { ProductFeedbackRepository } from './../product-feedback/product-feedback.repository';
 import { getPagingData } from './../common/utils/get-paging-data';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { QueryDto } from 'src/common/dto/query.dto';
@@ -14,6 +15,7 @@ export class OrderService {
   constructor(
     private readonly orderRepository: OrderRepository,
     private readonly productRepository: ProductRepository,
+    private readonly productFeedbackRepository: ProductFeedbackRepository,
     private readonly emailerService: EmailerService,
   ) {}
 
@@ -91,8 +93,30 @@ export class OrderService {
     );
   }
 
-  findOne(id: string) {
-    return this.orderRepository.findById(id);
+  async findOne(id: string) {
+    const order = await (await this.orderRepository.findById(id)).toObject();
+    if (!order) return order;
+
+    const feedbackList = await this.productFeedbackRepository.findByCondition(
+      {
+        order: id,
+      },
+      null,
+      null,
+      [
+        {
+          path: 'product',
+          select: 'name image',
+        },
+      ],
+    );
+
+    console.log('feedbackList: ', feedbackList, id);
+
+    return {
+      ...order,
+      feedbackList,
+    };
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {

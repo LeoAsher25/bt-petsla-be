@@ -1,9 +1,13 @@
 import {
+  AggregateOptions,
   Document,
   FilterQuery,
   Model,
+  PipelineStage,
   ProjectionType,
   QueryOptions,
+  UpdateQuery,
+  UpdateWithAggregationPipeline,
 } from 'mongoose';
 import CommonConstants from 'src/common/constants/common.constants';
 
@@ -49,7 +53,7 @@ export class BaseRepository<T extends Document> {
     return this.model.findOne(filter, returnFields, queryOptions).exec();
   }
 
-  async getByCondition(
+  async findByCondition(
     filter?: FilterQuery<T>,
     projection?: ProjectionType<T> | null | undefined,
     options?: QueryOptions<T>,
@@ -78,8 +82,8 @@ export class BaseRepository<T extends Document> {
     };
   }
 
-  async aggregate(option: any) {
-    return this.model.aggregate(option);
+  async aggregate(pipeline?: PipelineStage[], options?: AggregateOptions) {
+    return this.model.aggregate(pipeline, options);
   }
 
   async populate(result: T[], option: any) {
@@ -92,6 +96,14 @@ export class BaseRepository<T extends Document> {
 
   async findByIdAndUpdate(id, update) {
     return this.model.findByIdAndUpdate(id, update, { new: true });
+  }
+
+  async updateOne(
+    filter?: FilterQuery<T>,
+    update?: UpdateQuery<T> | UpdateWithAggregationPipeline,
+    options?: QueryOptions<T> | null,
+  ) {
+    return this.model.updateOne(filter, update, options);
   }
 
   async count(filter?: FilterQuery<T>) {
