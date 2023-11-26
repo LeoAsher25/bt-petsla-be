@@ -36,8 +36,9 @@ export class AuthService {
       throw new BadRequestException(
         MessageConstants.EMAIL_OR_PASSWORD_IS_INCORRECT,
       );
-    const tokens = await this.getTokens(user.id, user.email);
-    await this.updateRefreshToken(user.id, tokens.refreshToken);
+
+    const tokens = await this.getTokens(user._id, user.email);
+    await this.updateRefreshToken(user._id, tokens.refreshToken);
     return tokens;
   }
 
@@ -92,6 +93,7 @@ export class AuthService {
 
   async getTokenFromRefreshToken(refreshToken: string): Promise<Tokens> {
     const decoded = await this.verifyRefreshToken(refreshToken);
+
     const user: any = await this.userRepository.findById(
       decoded.sub,
       'email refreshToken',
