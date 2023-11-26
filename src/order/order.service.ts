@@ -1,13 +1,14 @@
-import { getPagingData } from './../common/utils/get-paging-data';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { EmailerService } from 'src/emailer/emailer.service';
 import { Product } from 'src/product/entities/product.entity';
 import { ProductRepository } from 'src/product/product.repository';
 import { User } from 'src/user/entities/user.entity';
+import { getPagingData } from './../common/utils/get-paging-data';
 import { ProductFeedbackRepository } from './../product-feedback/product-feedback.repository';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderQueryDto } from './dto/order-query.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { Order } from './entities/order.entity';
 import { OrderRepository } from './order.repository';
 
 @Injectable()
@@ -63,7 +64,7 @@ export class OrderService {
     this.emailerService.sendOrderSuccessEmail(
       currentUser.email,
       totalCost,
-      createOrderDto,
+      response,
     );
     for (const item of createOrderDto.orderItems) {
       // Update the stock of the product
@@ -120,7 +121,7 @@ export class OrderService {
     };
   }
 
-  async update(id: string, updateOrderDto: UpdateOrderDto) {
+  async update(id: string, updateOrderDto: UpdateOrderDto, currentUser: User) {
     try {
       const response = await this.orderRepository.findByIdAndUpdate(
         id,
@@ -131,6 +132,12 @@ export class OrderService {
         ...response.toObject(),
         ...updateOrderDto,
       };
+
+      this.emailerService.sendUpdateOrderEmail(
+        currentUser.email,
+        responseOrder.totalCost,
+        responseOrder as Order,
+      );
 
       return responseOrder;
     } catch (error) {

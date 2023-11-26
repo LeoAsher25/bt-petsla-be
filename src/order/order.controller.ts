@@ -52,9 +52,14 @@ export class OrderController {
     return this.orderService.findOne(id);
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(id, updateOrderDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateOrderDto: UpdateOrderDto,
+    @GetCurrentUser() currentUser: User,
+  ) {
+    return this.orderService.update(id, updateOrderDto, currentUser);
   }
 
   @Delete(':id')
