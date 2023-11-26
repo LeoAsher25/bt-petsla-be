@@ -1,14 +1,18 @@
-import { getPagingData } from './../common/utils/get-paging-data';
 import { Injectable } from '@nestjs/common';
 import { FilterQuery } from 'mongoose';
+import { ProductFeedbackRepository } from 'src/product-feedback/product-feedback.repository';
+import { QueryProductDto } from 'src/product/dto/product-query.dto';
 import { ProductRepository } from 'src/product/product.repository';
+import { getPagingData } from './../common/utils/get-paging-data';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { QueryProductDto } from 'src/product/dto/product-query.dto';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly productRepository: ProductRepository) {}
+  constructor(
+    private readonly productFeedbackRepository: ProductFeedbackRepository,
+    private readonly productRepository: ProductRepository,
+  ) {}
 
   create(createProductDto: CreateProductDto) {
     return this.productRepository.create(createProductDto);
@@ -40,16 +44,6 @@ export class ProductService {
       });
     }
 
-    // if (isSpecial) {
-    //   filter.$and.push({
-    //     isSpecial,
-    //   });
-    // } else {
-    //   filter.$and.push({
-    //     isSpecial: false,
-    //   });
-    // }
-
     if (usesTypes && usesTypes.length > 0) {
       filter.$and.push({
         usesTypes: {
@@ -64,7 +58,7 @@ export class ProductService {
       });
     }
 
-    return this.productRepository.getAndCount(
+    const products = await this.productRepository.getAndCount(
       filter.$and.length === 0 ? {} : filter,
       '',
       {
@@ -82,10 +76,40 @@ export class ProductService {
         },
       ],
     );
+
+    const productsWithRating = await Promise.all(
+      products.dataList.map(async (product) => {
+        const productFeedbacks =
+          await this.productFeedbackRepository.findByCondition({
+            product: product._id,
+          });
+
+        return {
+          ...product,
+          rating: productFeedbacks?.reduce(
+            (accumulator, currentValue) => accumulator + currentValue.rating,
+            0,
+          ),
+        };
+      }),
+    );
+
+    return { ...products, dataList: productsWithRating };
   }
 
-  findOne(id: string) {
-    return this.productRepository.findOne({ _id: id }, '');
+  async findOne(id: string) {
+    const product = await this.productRepository.findOne({ _id: id }, '');
+    const productFeedbacks =
+      await this.productFeedbackRepository.findByCondition({
+        product: product._id,
+      });
+    return {
+      ...product,
+      rating: productFeedbacks?.reduce(
+        (accumulator, currentValue) => accumulator + currentValue.rating,
+        0,
+      ),
+    };
   }
 
   update(id: string, updateProductDto: UpdateProductDto) {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateProductFeedbackDto {
   @ApiProperty({ required: true, example: 5 })
@@ -19,5 +19,6 @@ export class CreateProductFeedbackDto {
     example: 'Sản phẩm đẹp, cute, rất đáng tiền',
   })
   @IsString()
-  comment: string;
+  @IsOptional()
+  comment?: string;
 }

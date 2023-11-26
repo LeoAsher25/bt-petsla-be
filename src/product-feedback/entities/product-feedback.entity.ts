@@ -10,8 +10,8 @@ export class ProductFeedback extends mongoose.Document {
   @Prop({ required: true })
   rating: number;
 
-  @Prop({ required: true })
-  comment: string;
+  @Prop({})
+  comment?: string;
 
   @Prop({
     required: true,

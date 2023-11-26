@@ -1,30 +1,23 @@
 import { Module } from '@nestjs/common';
-import { ProductFeedbackService } from './product-feedback.service';
-import { ProductFeedbackController } from './product-feedback.controller';
 import { MongooseModule } from '@nestjs/mongoose';
+import { UserModule } from 'src/user/user.module';
 import {
   ProductFeedback,
   ProductFeedbackSchema,
 } from './entities/product-feedback.entity';
-import { UserModule } from 'src/user/user.module';
-import { ProductModule } from 'src/product/product.module';
+import { ProductFeedbackController } from './product-feedback.controller';
 import { ProductFeedbackRepository } from './product-feedback.repository';
-import { ProductRepository } from 'src/product/product.repository';
+import { ProductFeedbackService } from './product-feedback.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: ProductFeedback.name, schema: ProductFeedbackSchema },
     ]),
-    ProductModule,
     UserModule,
   ],
   controllers: [ProductFeedbackController],
-  providers: [
-    ProductFeedbackService,
-    ProductFeedbackRepository,
-    ProductRepository,
-  ],
+  providers: [ProductFeedbackService, ProductFeedbackRepository],
   exports: [ProductFeedbackRepository],
 })
 export class ProductFeedbackModule {}

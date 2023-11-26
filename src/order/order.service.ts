@@ -90,7 +90,6 @@ export class OrderService {
     if (orderStatus) {
       filter.orderStatus = Number(orderStatus);
     }
-
     return this.orderRepository.getAndCount(filter, '', {
       ...getPagingData(page, limit),
       sort: { createdAt: -1 },
@@ -114,8 +113,6 @@ export class OrderService {
         },
       ],
     );
-
-    console.log('feedbackList: ', feedbackList, id);
 
     return {
       ...order,

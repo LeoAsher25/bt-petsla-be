@@ -50,7 +50,7 @@ export class BaseRepository<T extends Document> {
     returnFields?: any,
     queryOptions?: QueryOptions,
   ): Promise<T> {
-    return this.model.findOne(filter, returnFields, queryOptions).exec();
+    return this.model.findOne(filter, returnFields, queryOptions).lean();
   }
 
   async findByCondition(
@@ -58,11 +58,14 @@ export class BaseRepository<T extends Document> {
     projection?: ProjectionType<T> | null | undefined,
     options?: QueryOptions<T>,
     populate?: any | null,
-  ): Promise<T[]> {
-    return this.model.find(filter, projection, options).populate(populate);
+  ) {
+    return await this.model
+      .find(filter, projection, options)
+      .populate(populate)
+      .lean();
   }
 
-  async findAll(): Promise<T[]> {
+  async findAll() {
     return this.model.find();
   }
 
@@ -75,7 +78,8 @@ export class BaseRepository<T extends Document> {
     const totalRecords = await this.model.count(filter);
     const dataList = await this.model
       .find(filter, projection, options)
-      .populate(populate);
+      .populate(populate)
+      .lean();
     return {
       totalRecords,
       dataList,
