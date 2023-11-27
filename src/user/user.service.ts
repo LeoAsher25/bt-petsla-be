@@ -1,6 +1,6 @@
 import { getPagingData } from './../common/utils/get-paging-data';
 import { UserRepository } from './user.repository';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { FilterQuery } from 'mongoose';
 import { QueryDto } from 'src/common/dto/query.dto';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
@@ -10,8 +10,16 @@ import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto) {
+    const checkUser = await this.userRepository.findOne({
+      email: createUserDto.email,
+    });
+
+    if (checkUser) {
+      throw new BadRequestException('Email đã được sử dụng');
+    }
+
+    return this.userRepository.create(createUserDto);
   }
 
   findAll(query: QueryDto) {
@@ -39,11 +47,11 @@ export class UserService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  update(id: string, updateUserDto: UpdateUserDto) {
+    return this.userRepository.updateOne({ _id: id }, updateUserDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  remove(id: string) {
+    return this.userRepository.delete(id);
   }
 }

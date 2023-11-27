@@ -116,7 +116,7 @@ export class ProductService {
     return this.productRepository.findByIdAndUpdate(id, updateProductDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  remove(id: string) {
+    return this.productRepository.delete(id);
   }
 }

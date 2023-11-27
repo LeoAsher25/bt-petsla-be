@@ -113,4 +113,8 @@ export class BaseRepository<T extends Document> {
   async count(filter?: FilterQuery<T>) {
     return this.model.count(filter);
   }
+
+  async delete(id: string) {
+    return this.model.deleteOne({ _id: id });
+  }
 }
