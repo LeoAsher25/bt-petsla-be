@@ -10,7 +10,9 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { UnidecodeQuery } from 'src/common/decorators/unidecode-query.decorator';
+import { QueryDto } from 'src/common/dto/query.dto';
 
 @Controller('users')
 @ApiTags('User')
@@ -23,8 +25,15 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  @ApiQuery({ name: 'keyword', required: false })
+  findAll(
+    @UnidecodeQuery({
+      fields: ['keyword'],
+      dto: QueryDto,
+    })
+    query: QueryDto,
+  ) {
+    return this.userService.findAll(query);
   }
 
   @Get(':id')
